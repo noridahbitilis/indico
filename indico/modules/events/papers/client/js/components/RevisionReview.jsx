@@ -65,10 +65,9 @@ export default function RevisionReview({review, revision}) {
       <div className="flexrow i-timeline-item-content">
         <div className="i-timeline-item-metadata">
           <div className="f-self-stretch">
-            <Translate>
-              <Param name="reviewerName" value={review.user.fullName} wrapper={<strong />} /> left a
+            Reviewer left a
               review
-            </Translate>{' '}
+            
             <Popup
               trigger={
                 <i className={`review-comment-visibility ${review.visibility.name} icon-shield`} />
