@@ -195,7 +195,9 @@
 
 {% macro render_abstract_judgment(abstract) %}
     <div class="i-timeline-item">
-        {{ render_user_avatar(abstract.judge) }}
+        <div class="avatar-div">
+        <img src="/images/avatar.png" alt="" class="ui image circular profile-picture">
+    </div>
         <div class="i-timeline-item-box header-indicator-left">
             <div class="i-box-header flexrow">
                 <div class="f-self-stretch">
@@ -533,20 +535,20 @@
         {%- endtrans %}
     {% elif abstract.can_judge(session.user) %}
         {% if action == 'accepted' %}
-            {% trans name=abstract.judge.name -%}
-                <strong>{{ name }}</strong> accepted this abstract
+            {% trans name=abstract.judge.id -%}
+                <strong>Judge {{ name }}</strong> accepted this abstract
             {%- endtrans %}
         {% elif action == 'rejected' %}
-            {% trans name=abstract.judge.name -%}
-                <strong>{{ name }}</strong> rejected this abstract
+            {% trans name=abstract.judge.id -%}
+                <strong>Judge {{ name }}</strong> rejected this abstract
             {%- endtrans %}
         {% elif action == 'merged' %}
-            {% trans name=abstract.judge.name -%}
-                <strong>{{ name }}</strong> merged this abstract into another
+            {% trans name=abstract.judge.id -%}
+                <strong>Judge {{ name }}</strong> merged this abstract into another
             {%- endtrans %}
         {% elif action == 'duplicate' %}
-            {% trans name=abstract.judge.name -%}
-                <strong>{{ name }}</strong> marked this abstract as duplicate of another
+            {% trans name=abstract.judge.id -%}
+                <strong>Judge {{ name }}</strong> marked this abstract as duplicate of another
             {%- endtrans %}
         {% endif %}
     {% else %}
