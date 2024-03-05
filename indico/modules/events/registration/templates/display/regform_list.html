@@ -25,6 +25,7 @@
                 <th></th>
                 <th>{% trans %}Opens{% endtrans %}</th>
                 <th>{% trans %}Closes{% endtrans %}</th>
+		<th>{% trans %}Fee{% endtrans %}</th>
                 {% if any_published_registrations %}
                     <th></th>
                 {% endif %}
@@ -50,6 +51,7 @@
                     </td>
                     <td>{{ regform.start_dt | format_datetime(timezone=event.display_tzinfo) if regform.start_dt else _('Not started') }}</td>
                     <td>{{ regform.end_dt | format_datetime(timezone=event.display_tzinfo) if regform.end_dt else _('No deadline') }}</td>
+		    <td>{% if regform.base_price -%}{{ regform.render_base_price() }}{%- endif %}</td>
                     {% if any_published_registrations %}
                         {% if regform.publish_registration_count %}
                             <td class="icon-user">
@@ -68,11 +70,6 @@
                                class="i-button highlight"
                                title="{% trans %}You have already registered{% endtrans %}">
                                 {% trans %}Check details{% endtrans %}
-                            </a>
-                        {% elif regform.is_purged %}
-                            <a class="i-button highlight disabled"
-                               title="{% trans %}Registration is disabled due to an expired retention period{% endtrans %}">
-                                {{ button_text }}
                             </a>
                         {% elif not regform.is_open %}
                             <a class="i-button highlight disabled"
