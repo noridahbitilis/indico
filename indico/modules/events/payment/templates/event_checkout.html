@@ -51,7 +51,7 @@
             <div class="i-box-title">{% trans %}Payment information{% endtrans %}</div>
         </div>
         <div class="i-box-content">
-            <div id="payment-content"></div>
+		<div id="payment-content" data-id="{{ registration.id }}">hiii</div>
         </div>
     </div>
 
@@ -79,10 +79,20 @@
                         if (handleAjaxError(data)) {
                             return;
                         }
-                        paymentContainer.html(data.html);
+			var reg_id = $('#payment-content').data('id');
+
+			if(paymentMethod == 'manual'){
+			var hostname = window.location.hostname;
+				var akaun_amanah = data.html.replace(/<[^>]+>/g, '');
+				paymentContainer.html('<a class="i-button highlight" href="https://'+hostname+'/payment/payment.php?id='+reg_id+'&akaunAmanah='+akaun_amanah+'&method=FPX">Proceed to FPX</a> <a class="i-button highlight"  href="https://'+hostname+'/payment/payment.php?id='+reg_id+'&akaunAmanah='+akaun_amanah+'&method=CREDIT_CARD">Proceed to Credit Card</a>');
+			}
+			else{
+				paymentContainer.html(data.html);
+			}
                     }
                 });
             };
+
 
             if(!paymentMethod) {
                 $('#payment').hide();
