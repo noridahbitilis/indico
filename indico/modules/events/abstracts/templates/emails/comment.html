@@ -9,8 +9,8 @@
 {% block content_header %}
     <p>{% trans name=recipient.first_name %}Dear {{ name }},{% endtrans %}</p>
     <p>
-        {%- trans name=submitter.full_name, title=abstract.title, strong='<strong>'|safe, endstrong='</strong>'|safe -%}
-            {{ name }} commented on the abstract {{ strong }}{{ title }}{{ endstrong }}:
+        {%- trans name=submitter.id, title=abstract.title, strong='<strong>'|safe, endstrong='</strong>'|safe -%}
+            Reviewer {{ name }} commented on the abstract {{ strong }}{{ title }}{{ endstrong }}:
         {%- endtrans -%}
     </p>
     <blockquote style="border-left: 5px solid #dfdfdf; padding-left: 10px; font-style: italic; color: #999;">
