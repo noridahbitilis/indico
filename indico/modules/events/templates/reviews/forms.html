@@ -102,6 +102,14 @@
             {% trans %}Cancel{% endtrans %}
         </button>
     {% endcall %}
+    <script>
+        selectvis = document.getElementById('visibility');
+        var opt = document.createElement('option');
+        opt.value = '';
+        opt.innerHTML = 'Please select';
+        selectvis.appendChild(opt);
+        selectvis.value = '';
+    </script>
 {% endmacro %}
 
 {% macro render_question_rows(form) %}
