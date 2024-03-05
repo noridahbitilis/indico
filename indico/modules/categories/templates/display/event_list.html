@@ -1,26 +1,14 @@
 {% from 'message_box.html' import message_box %}
 
 {% macro _hidden_events_block(class, category, events_by_month, format_event_date, is_recent, happening_now,
-                             before=none, after=none, message_first=true) %}
+                             before=none, after=none, message_first=false) %}
     {% set message=caller() %}
+   
     {% macro render_message() %}
-        {% call message_box('info', icon=false) %}
-            <div class="content smaller">
-                <span class="js-show-message">
-                    {{ message }}
-                    <a class="js-toggle-list" href="#">{% trans %}Show{% endtrans %}</a>
-                    <span class="icon-spinner js-spinner"></span>
-                </span>
-                <span class="js-hide-message">
-                    {{ message }}
-                    <a class="js-toggle-list" href="#">{% trans %}Hide{% endtrans %}</a>
-                </span>
-            </div>
-        {% endcall %}
     {% endmacro %}
 
     {% macro render_list() %}
-        <div class="events"
+           <div class="events"
              data-event-list-url="{{ url_for('.event_list', category) }}"
              {% if after %}data-event-list-after="{{ after }}"{% endif %}
              {% if before %}data-event-list-before="{{ before }}"{% endif %}>
@@ -28,9 +16,11 @@
                 {{ event_list_block(events_by_month, format_event_date, is_recent, happening_now) }}
             {%- endif -%}
         </div>
+
+        
     {% endmacro %}
 
-    <div class="{{ class }}">
+    <div class="{{ class }}"> 
         {% if message_first %}
             {{ render_message() }}
             {{ render_list() }}
@@ -39,11 +29,12 @@
             {{ render_message() }}
         {% endif %}
     </div>
+    
 {% endmacro %}
 
 {% macro event_list(events_by_month, format_event_date, is_recent, happening_now, category, future_event_count,
                     past_event_count, future_threshold, past_threshold, future_events_by_month=[],
-                    past_events_by_month=[], show_future_events=false, show_past_events=false,
+                    past_events_by_month=[], show_future_events=true, show_past_events=true,
                     has_hidden_events=false, is_flat=false, request_params={}) %}
     {#- request_params parameter provided for template extensions -#}
     {% if has_hidden_events %}
@@ -57,63 +48,133 @@
     {% endif %}
 
     <div class="event-list"
-         data-show-future-events-url="{{ url_for('.show_future_events', category) }}"
-         data-show-past-events-url="{{ url_for('.show_past_events', category) }}">
-        {% if future_event_count %}
+	 data-show-future-events-url="{{ url_for('.show_future_events', category) }}"
+         data-show-past-events-url="{{ url_for('.show_past_events', category) }}">	
+        {% set currentmonth = now().month  %}
+        {% if currentmonth < 10 %}
+        {% set yearmonth = now().year|string + '-0' + currentmonth|string  %}
+        {% else %}
+        {% set yearmonth = now().year|string + '-' + currentmonth|string  %}
+        {% endif %}
+
+        {% set nextmonth = now().month + 1 %}
+        {% if nextmonth < 10 %}
+        {% set yearnextmonth = now().year|string + '-0' + nextmonth|string  %}
+        {% else %}
+        {% set yearnextmonth = now().year|string + '-' + nextmonth|string  %}
+        {% endif %}
+
+        {% set next2month = now().month + 2 %}
+        {% if next2month < 10 %}
+        {% set yearnext2month = now().year|string + '-0' + next2month|string  %}
+        {% else %}
+        {% set yearnext2month = now().year|string + '-' + next2month|string  %}
+        {% endif %}
+
+        {% set next3month = now().month + 3 %}
+        {% if next3month < 10 %}
+        {% set yearnext3month = now().year|string + '-0' + next3month|string  %}
+        {% else %}
+        {% set yearnext3month = now().year|string + '-' + next3month|string  %}
+        {% endif %}
+
+            <!-- {{ event_list_block(events_by_month, format_event_date, is_recent, happening_now) }} -->
+   
+            <h4>Current Month
+            </h4>
+            {% call _hidden_events_block('current-events', category, future_events_by_month, format_event_date,
+            is_recent, happening_now, after=yearmonth, before=yearnextmonth) %}
+            {% endcall %}
+            <h4>Next Month
+            </h4>
+            {% call _hidden_events_block('next-events', category, future_events_by_month, format_event_date,
+            is_recent, happening_now, after=yearnextmonth, before=yearnext2month) %}
+            {% endcall %}
+            <h4>Upcoming Events
+            </h4>
             {% call _hidden_events_block('future-events', category, future_events_by_month, format_event_date,
-                                        is_recent, happening_now, after=future_threshold) %}
-                {% trans count=future_event_count -%}
-                    There is one event in the future.
-                {%- pluralize -%}
-                    There are {{ count }} events in the future.
-                {%- endtrans %}
+            is_recent, happening_now, after=yearnext2month) %}
             {% endcall %}
-        {% endif %}
-        <div>
-            {{ event_list_block(events_by_month, format_event_date, is_recent, happening_now) }}
-        </div>
-        {% if past_event_count %}
-            {% call _hidden_events_block('past-events', category, past_events_by_month, format_event_date, is_recent,
-                                        happening_now, before=past_threshold, message_first=false) %}
-                {% trans count=past_event_count -%}
-                    There is one event in the past.
-                {%- pluralize -%}
-                    There are {{ count }} events in the past.
-                {%- endtrans %}
+            <h4>Past Events
+            </h4>
+            {% call _hidden_events_block('past-events', category, future_events_by_month, format_event_date,
+            is_recent, happening_now, before=yearmonth) %}
             {% endcall %}
-        {% endif %}
+            
     </div>
     <script>
-        setupCategoryDisplayEventList({{ (show_future_events and not future_events_by_month) | tojson }},
+        setupCategoriDisplayEventList({{ (show_future_events and not future_events_by_month) | tojson }},
                                       {{ (show_past_events and not past_events_by_month) | tojson }},
                                       {{ is_flat | tojson }},
                                       {{ request_params | tojson }});
+
+    function setupCategoriDisplayEventList(showFutureEvents,showPastEvents,requestParams) 
+    {
+    const $eventList = $('.event-list');
+    const $futureEvents = $eventList.find('.future-events');
+    const $pastEvents = $eventList.find('.past-events');
+    const $nextEvents = $eventList.find('.next-events');
+    const $currentEvents = $eventList.find('.current-events');
+
+    setupToggleEventListButton($futureEvents);
+    setupToggleEventListButton($pastEvents);
+    setupToggleEventListButton($nextEvents);
+    setupToggleEventListButton($currentEvents);
+
+    function setupToggleEventListButton(wrapper, callback) {
+      const $wrapper = $(wrapper);
+      const $content = $wrapper.find('.events');
+      $.ajax({
+            url: $content.data('event-list-url'),
+            data: {
+              before: $content.data('event-list-before'),
+              after: $content.data('event-list-after'),
+              ...requestParams,
+            },
+            error: handleAjaxError,
+            success(data) {
+              $content.html(data.html);
+              $content.show();
+            },
+          });
+
+    }
+  };
+                                      $('.event-list').find('.future-events').find('.js-toggle-list').first().trigger('click', true);
+                                      $('.event-list').find('.next-events').find('.js-toggle-list').first().trigger('click', true);
+                                      $( document ).ready(function() {
+                                    console.log($("span.label:contains('FPP')").parent().closest('div'));
+    console.log( "ready!" );
+});
     </script>
 {% endmacro %}
 
 {% macro event_list_block(events_by_month, format_event_date, is_recent, happening_now) %}
-    {% for month in events_by_month %}
-        <h4 class="{% if month.is_current %}current-month{% endif %}">
-            <span>{{ month.name }}</span>
-        </h4>
-        <ul>
-            {% for event in month.events %}
+<section class="gallery-block cards-gallery">
+	    <div class="container">
+            <div class="row">   
+        {% set currentmonth = now().strftime('%Y-%m')  %}
+        {% set latestdate = events_by_month[0]['events'][0]['end_dt'].strftime('%Y-%m')  %}
+{% if latestdate >= currentmonth %}
+{% set events_by_month = events_by_month|reverse %}
+{% endif %}
+{% for month in events_by_month %} 
+	  {% for event in month.events %}
                 {% set is_lecture = (event.type == 'lecture') %}
-                <li>
-                    <span class="event-icons">
-                        <a class="icon-calendar" href="{{ url_for('events.export_event_ical', event) }}" title="{% trans %}Export{% endtrans %}"></a>
-                        {% if session.user and event in session.user.favorite_events %}
-                            <i class="icon-star" title="{% trans %}You have favorited this event.{% endtrans %}"></i>
-                        {% endif %}
-                    </span>
-                    <span class="list-name">
-                        <span class="date {% if happening_now(event) %}today{% endif %}">
-                            {{ format_event_date(event) }}
-                        </span>
-                        <div class="event-title">
-                            <a href="{{ event.url }}">
-                                {{ event.get_verbose_title(show_speakers=is_lecture, show_series_pos=is_lecture) | striptags }}
-                            </a>
+                
+
+		<div class="col-md-6 col-lg-3 col-sm-6">
+		<div class="card border-0 transform-on-hover">
+			<div class="lightbox">
+			{% if event.has_logo %}
+                         <img src="{{ event.logo_url }}" alt="{{ event.title }}" class="transforms-on-hover">
+                   
+                 {% endif %}
+		</div>
+		 <div class="card-body">
+			 <h6><a href="{{ event.url }}">{{ event.title }}</a></h6>
+			 <p class="text-muted card-text">{{ format_event_date(event)}}</p>
+                 
                             <span class="protected">
                                 {% if event.visibility == 0 %}
                                     <span class="ui label mini grey"
@@ -122,27 +183,138 @@
                                     </span>
                                 {% endif %}
                                 {% if event.is_self_protected %}
-                                    <span class="icon-shield" data-type="restricted" title="{% trans %}Protected{% endtrans %}"></span>
+                                    <span data-type="restricted">({% trans %}protected{% endtrans %})</span>
                                 {% endif %}
-
+                                {% if event.label %}
+                                <span class="ui label basic mini {{ event.label.color }}"
+                                      title="{{ event.label_message }}">
+                                    {{- event.label.title -}}
+                                </span>
+                            {% endif %}
                                 {% if is_recent(event.created_dt) %}
                                     <span class="ui label mini blue"
                                           title="{% trans %}This event is new.{% endtrans %}">
                                         {%- trans %}new{% endtrans -%}
                                     </span>
                                 {% endif %}
-                                {{ template_hook('event-status-labels', event=event) }}
                             </span>
-                            {% if event.label %}
-                                <span class="ui label basic mini {{ event.label.color }}"
-                                      title="{{ event.label_message }}">
-                                    {{- event.label.title -}}
-                                </span>
-                            {% endif %}
-                        </div>
-                    </span>
-                </li>
+                            
+                    </div>
+		 </div></div>
             {% endfor %}
-        </ul>
-    {% endfor %}
+        
+	    {% endfor %}</div></div></section>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
+<style>
+.gallery-block{
+	
+}
+
+.gallery-block .heading{
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.gallery-block .heading h2{
+    font-weight: bold;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+}
+
+.gallery-block.cards-gallery h6 {
+  font-size: 17px;
+  font-weight: bold;
+  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.gallery-block.cards-gallery .card{
+  transition: 0.4s ease;
+}
+
+.gallery-block.cards-gallery .card img {
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.gallery-block.cards-gallery .card-body {
+  text-align: center;
+}
+
+.gallery-block.cards-gallery .card-body p {
+  font-size: 15px;
+}
+
+.gallery-block.cards-gallery a {
+  color: #212529;
+}
+
+.gallery-block.cards-gallery a:hover {
+  text-decoration: none;
+}
+
+.gallery-block.cards-gallery .card {
+  margin-bottom: 30px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+@media (min-width: 576px) {
+
+	.gallery-block .transform-on-hover:hover {
+	    transform: translateY(-10px) scale(1.02);
+	    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.15) !important;
+	}
+	.lightbox .transforms-on-hover:hover {
+            transform: scale(1.2);
+            box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.15) !important;
+        }
+
+}
+.card{
+    height:300px;
+}
+.card .lightbox {
+    width: 100%;
+    height: 80%;
+    display:inline-block;
+    position:relative;
+	    
+}
+.lightbox img {
+    max-width: 100%;
+    max-height:100%;
+    margin: auto;
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+}
+.category-content {
+    max-width: 80%;
+    background-color: #f8f8f8;
+}
+
+.category-container{
+	background-color: #f8f8f8;
+}
+.lightbox .bg-image {
+
+  -webkit-filter: blur(8px);
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.event-list h4 {
+    color: orange;
+    margin-left: 0px;
+}
+.category-content-wrapper {
+    padding: 0px;
+}
+</style>
+
 {% endmacro %}
