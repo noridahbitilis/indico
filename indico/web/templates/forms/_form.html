@@ -76,6 +76,19 @@
                     {%- if field.widget.input_type != 'checkbox' and (not field.widget.input_type or not placeholder) -%}
                         {{ field.label() }}
                     {%- endif -%}
+
+                    {%- if 'abstract' in url_for(request.endpoint, **request.view_args) and field.id == 'attachments' %}
+                    <i class="required" title="{% trans %}This field is required{% endtrans %}">*</i>
+                    <script>
+                          $(".i-form").submit(function(e){ 
+                            var attachmentvalue = $("[name='__file_change_trigger']").val();
+                            if(attachmentvalue == 'no-file'){
+                            alert("Field attachments is required");
+                            e.preventDefault();
+                            }
+                          });
+                        </script>
+                    {% endif -%}
                     {%- if field.flags.required %}<i class="required" title="{% trans %}This field is required{% endtrans %}">*</i>{% endif -%}
                 </div>
             {% endif %}
