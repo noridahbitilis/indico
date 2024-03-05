@@ -78,7 +78,19 @@
                     </div>
                 </div>
                 <div class="i-box-content">
+		{% if registration.transaction.provider != '_manual' %}
+			<dl class="i-data-list">
+			<dt>Amount</dt>
+			<dd>{{registration.transaction.amount}} {{registration.transaction.currency}}</dd>
+			<dt>Payment date</dt>
+			<dd>{{registration.transaction.timestamp | format_datetime (timezone=registration.transaction.registration.event.tzinfo)}}</dd>
+			<dt>Paid with</dt>
+			<dd>{{registration.transaction.provider}}</dd>
+			</dl>
+		{% endif %}
+		{% if registration.transaction.provider == '_manual' %}
                     {{ registration.transaction.render_details()|safe }}
+		{% endif %}
                 </div>
             </div>
         {% endif %}
