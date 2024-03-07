@@ -111,7 +111,7 @@
                                 {%- trans %}Registrations{% endtrans -%}
                                 {% block existing_count scoped %}
                                     <span class="badge">
-                                        {{- regform.existing_registrations_count -}}
+                                        {{- regform.active_registration_count -}}
                                         {% if regform.registration_limit %}
                                             / {{ regform.registration_limit }}
                                         {%- endif -%}
@@ -124,6 +124,24 @@
                                 {% trans %}Manage{% endtrans %}
                             </a>
                         </div>
+                        <div class="group">
+                            <button id="{{ regform.id }}" onclick="clone_registration(id)" class="i-button highlight icon-copy">
+                                {% trans %}Clone{% endtrans %}
+                            </button>
+                        </div>
+                        <script>
+                            function clone_registration(id){
+                                if(confirm("Clone the registration form?")){
+
+                                $.ajax({
+                                type: "POST",
+                                url: "https://"+window.location.hostname+"/php/clone_registration.php?id="+id,
+                                success: function() {
+                                    if(!alert('Success')){window.location.reload();}
+                                    }
+                                });}
+                            }
+                        </script>
                         {% block delete_regform_button scoped %}
                             <div class="group hide-if-locked">
                                 <button class="i-button icon-remove danger text-color"
