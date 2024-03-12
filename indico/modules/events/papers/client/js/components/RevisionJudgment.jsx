@@ -38,19 +38,19 @@ export default function RevisionJudgment({revision}) {
           <div className="f-self-stretch">
             {state === PaperState.accepted && (
               <Translate>
-                <Param name="judgeName" value={judge.fullName} wrapper={<strong />} /> accepted this
+                Judge accepted this
                 paper.
               </Translate>
             )}
             {state === PaperState.rejected && (
               <Translate>
-                <Param name="judgeName" value={judge.fullName} wrapper={<strong />} /> rejected this
+                Judge rejected this
                 paper.
               </Translate>
             )}
             {state === PaperState.to_be_corrected && (
               <Translate>
-                <Param name="judgeName" value={judge.fullName} wrapper={<strong />} /> asked for
+                Judge asked for
                 changes.
               </Translate>
             )}{' '}
