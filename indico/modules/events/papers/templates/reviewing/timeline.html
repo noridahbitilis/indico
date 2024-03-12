@@ -85,7 +85,7 @@
         {% endset %}
         {% if contribution_page %}
             {%- trans judge=paper.last_revision.judge.full_name -%}
-                Accepted on {{ date_time }} by {{ judge }}
+                Accepted on {{ date_time }}
             {%- endtrans -%}
         {% else %}
             {%- trans submitter=paper.last_revision.submitter.full_name -%}
