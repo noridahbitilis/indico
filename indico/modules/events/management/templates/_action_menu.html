@@ -125,6 +125,25 @@
                           data-event-id="{{ event.id }}"
                           {{ 'data-pending-request' if event.pending_move_request }}></span>
                    </a>
+                        <div class="group">
+                            <button id="{{ event.id }}" onclick="request_publish(id)" class="i-button highlight">
+                                {% trans %}Request Publish{% endtrans %}
+                            </button>
+                        </div>
+
+                    <script>
+                            function request_publish(id){
+                                if(confirm("Request to publish the event?")){
+
+                                $.ajax({
+                                type: "POST",
+                                url: "https://"+window.location.hostname+"/php/request-publish.php?id="+id,
+                                success: function() {
+                                    if(!alert('Success')){window.location.reload();}
+                                    }
+                                });}
+                            }
+                        </script>
                 {% endif %}
 
                 <div class="group">
