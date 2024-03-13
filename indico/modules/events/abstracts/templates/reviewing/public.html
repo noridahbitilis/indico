@@ -195,9 +195,15 @@
 
 {% macro render_abstract_judgment(abstract) %}
     <div class="i-timeline-item">
+        {% if 'manage' in url_for(request.endpoint, **request.view_args) %}
+    {{ render_user_avatar(abstract.judge) }}
+        {% else %}
         <div class="avatar-div">
         <img src="/images/avatar.png" alt="" class="ui image circular profile-picture">
     </div>
+        
+        {% endif %}
+        
         <div class="i-timeline-item-box header-indicator-left">
             <div class="i-box-header flexrow">
                 <div class="f-self-stretch">
@@ -534,6 +540,25 @@
             <strong>{{ name }}</strong> withdrew this abstract
         {%- endtrans %}
     {% elif abstract.can_judge(session.user) %}
+    {% if 'manage' in url_for(request.endpoint, **request.view_args) %}
+        {% if action == 'accepted' %}
+                {% trans name=abstract.judge.name -%}
+                    <strong>{{ name }}</strong> accepted this abstract
+                {%- endtrans %}
+            {% elif action == 'rejected' %}
+                {% trans name=abstract.judge.name -%}
+                    <strong>{{ name }}</strong> rejected this abstract
+                {%- endtrans %}
+            {% elif action == 'merged' %}
+                {% trans name=abstract.judge.name -%}
+                    <strong>{{ name }}</strong> merged this abstract into another
+                {%- endtrans %}
+            {% elif action == 'duplicate' %}
+                {% trans name=abstract.judge.name -%}
+                    <strong>{{ name }}</strong> marked this abstract as duplicate of another
+                {%- endtrans %}
+            {% endif %}
+{% else %}
         {% if action == 'accepted' %}
             {% trans name=abstract.judge.id -%}
                 <strong>Judge {{ name }}</strong> accepted this abstract
@@ -551,6 +576,7 @@
                 <strong>Judge {{ name }}</strong> marked this abstract as duplicate of another
             {%- endtrans %}
         {% endif %}
+{% endif %}
     {% else %}
         {% if action == 'accepted' %}
             {% trans %}This abstract was accepted{% endtrans %}
