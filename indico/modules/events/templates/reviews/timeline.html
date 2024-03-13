@@ -60,16 +60,26 @@
 
 {% macro render_comment(comment, proposal) %}
     <div id="review-comment-{{ comment.id }}" class="i-timeline-item">
+         {% if 'manage' in url_for(request.endpoint, **request.view_args) %}
+    {{ render_user_avatar(comment.user) }}
+        {% else %}
         <div class="avatar-div">
         <img src="/images/avatar.png" alt="" class="ui image circular profile-picture">
     </div>
+        {% endif %}
         <div class="flexrow i-timeline-item-content">
             <div class="i-timeline-item-box header-indicator-left">
                 <div class="i-box-header flexrow">
                     <div class="f-self-stretch">
+                        {% if 'manage' in url_for(request.endpoint, **request.view_args) %}
+                        {% trans name=comment.user.name -%}
+                            <strong>{{ name }}</strong> left a comment
+                        {%- endtrans %}
+                        {% else %}
                         {% trans name=comment.user.id -%}
                             <strong>Reviewer {{ name }}</strong> left a comment
                         {%- endtrans %}
+                        {% endif %}
                         {{ render_visibility_hint(comment.visibility) }}
                         <time datetime="{{ comment.created_dt.isoformat() }}">
                             {{- comment.created_dt|format_human_date -}}
@@ -115,15 +125,25 @@
     {% set ratings = review.ratings|rejectattr('question.is_deleted')|sort(attribute='question.position') %}
     {% set proposal = review.revision.proposal %}
     <div id="proposal-review-{{ review.id }}" class="i-timeline-item">
+         {% if 'manage' in url_for(request.endpoint, **request.view_args) %}
+    {{ render_user_avatar(review.user) }}
+        {% else %}
         <div class="avatar-div">
         <img src="/images/avatar.png" alt="" class="ui image circular profile-picture">
     </div>
+        {% endif %}
         <div class="flexrow i-timeline-item-content">
             <div class="i-timeline-item-metadata">
                 <div class="f-self-stretch">
-                    {% trans name=review.user.id -%}
+                    {% if 'manage' in url_for(request.endpoint, **request.view_args) %}
+                         {% trans name=review.user.name -%}
+                        <strong>{{ name }}</strong> left a review
+                    {%- endtrans %}
+                        {% else %}
+                        {% trans name=review.user.id -%}
                         <strong>Reviewer {{ name }}</strong> left a review
 			{%- endtrans %}
+                        {% endif %}
                     {{ render_visibility_hint(review.visibility) }}
                     <time datetime="{{ review.created_dt.isoformat() }}">
                         {{- review.created_dt|format_human_date -}}
