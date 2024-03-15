@@ -73,6 +73,14 @@ _bp.add_url_rule('/manage/papers/teams/contact', 'contact_staff', management.RHC
 _bp.add_url_rule('/manage/papers/enable/<any(content,layout):reviewing_type>', 'switch',
                  management.RHSwitchReviewingType, methods=('PUT', 'DELETE'))
 
+# Emailing (management)
+_bp.add_url_rule('/manage/papers/api/email-roles/metadata', 'api_email_paper_roles_metadata',
+                 management.RHAbstractsAPIEmailAbstractRolesMetadata, methods=('POST',))
+_bp.add_url_rule('/manage/papers/api/email-roles/preview', 'api_email_paper_roles_preview',
+                 management.RHAbstractsAPIEmailAbstractRolesPreview, methods=('POST',))
+_bp.add_url_rule('/manage/papers/api/email-roles/send', 'api_email_paper_roles_send',
+                 management.RHAbstractsAPIEmailAbstractRolesSend, methods=('POST',))
+
 # CFP scheduling
 _bp.add_url_rule('/manage/papers/schedule', 'schedule_cfp', management.RHScheduleCFP,
                  methods=('GET', 'POST'))
