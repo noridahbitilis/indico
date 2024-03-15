@@ -363,6 +363,23 @@
                      data-object-context="contributions"
                      data-params-selector="#assignment-list input[name=contribution_id]:checked">
                 </div>
+
+                <div class="group">
+                    <div id="email-authors-container"
+                         class="i-button-wrapper"
+                         data-event-id="{{ event.id }}"
+                         data-object-context="contributions"
+                         data-params-selector="#assignment-list input[name=contribution_id]:checked">
+                    </div>
+                    <div id="email-contrib-roles-container"
+                         class="i-button-wrapper"
+                         data-object-context="contributions"
+                         data-id-selector="#contribution-list input[name=contribution_id]:checked"
+                         data-metadata-url="/event/{{event.id}}/manage/contributions/api/email-roles/metadata"
+                         data-preview-url="/event/{{event.id}}/manage/contributions/api/email-roles/preview"
+                         data-send-url="/event/{{event.id}}/manage/contributions/api/email-roles/send">
+                    </div>
+                </div>
                 <button class="i-button icon-attachment js-requires-selected-row disabled js-submit-list-form"
                         data-href="{{ url_for('.download_papers', event) }}">
                     {%- trans %}Download papers{% endtrans -%}
@@ -372,7 +389,7 @@
                             data-href="{{ url_for('.export_json', event) }}">
                         {%- trans %}Export as JSON{% endtrans -%}
                     </button>
-
+                    <br>
                     <button class="i-button js-requires-selected-row disabled"
                             onclick="getFromAbstract()">
                         {%- trans %}Get file from abstract{% endtrans -%}
@@ -419,6 +436,7 @@
         {% if selected_entry %}
             $('#search-input').val('#{{ selected_entry }}').trigger('change');
         {% endif %}
+        setupEmailContribAbstractRoles('#email-contrib-roles-container');
         setupPaperAssignmentList();
         setupAuthorsListButton('#authors-list-container');
     </script>
