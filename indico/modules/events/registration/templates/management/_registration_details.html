@@ -149,7 +149,15 @@
             <div class="group">
                 <span class="i-button label icon-coins">
                     {{ registration.render_price() }}
-                </span>
+               
+            </div>
+            <div class="group">
+                <button class="i-button"
+                        data-method="POST"
+                        data-params="{{ dict(pay=1) | tojson | forceescape }}"
+                        data-href="{{ url_for('.toggle_registration_payment', registration) }}">
+                    {% trans %}Edit price{% endtrans %}
+                </button>
             </div>
             <div class="group">
                 <button class="i-button"
@@ -178,7 +186,7 @@
         {%- endtrans %}
     </div>
     {% set can_reset = registration.registration_form.moderation_enabled and not registration.is_paid %}
-    {% set ticket_template = registration.registration_form.get_ticket_template() %}
+   
     {% set can_get_ticket = registration.registration_form.tickets_enabled and (not ticket_template.is_ticket or not registration.is_ticket_blocked) %}
     {% if can_reset or can_get_ticket %}
         <div class="toolbar">
