@@ -170,7 +170,7 @@ def make_email(to_list=None, cc_list=None, bcc_list=None, from_address=None, rep
         'to': set(to_list),
         'cc': set(cc_list),
         'bcc': set(bcc_list),
-        'from': from_address or config.NO_REPLY_EMAIL,
+        'from': 'upc@ums.edu.my',
         'reply_to': set(reply_address),
         'attachments': attachments or [],
         'subject': subject.strip(),
