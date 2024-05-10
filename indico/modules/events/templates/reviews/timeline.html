@@ -60,7 +60,8 @@
 
 {% macro render_comment(comment, proposal) %}
     <div id="review-comment-{{ comment.id }}" class="i-timeline-item">
-         {% if 'manage' in url_for(request.endpoint, **request.view_args) %}
+        {% set c_can_review = proposal.can_review(comment.user) %}
+         {% if 'manage' in url_for(request.endpoint, **request.view_args) or not c_can_review %}
     {{ render_user_avatar(comment.user) }}
         {% else %}
         <div class="avatar-div">
@@ -71,7 +72,7 @@
             <div class="i-timeline-item-box header-indicator-left">
                 <div class="i-box-header flexrow">
                     <div class="f-self-stretch">
-                        {% if 'manage' in url_for(request.endpoint, **request.view_args) %}
+                        {% if 'manage' in url_for(request.endpoint, **request.view_args) or not c_can_review %}
                         {% trans name=comment.user.name -%}
                             <strong>{{ name }}</strong> left a comment
                         {%- endtrans %}
