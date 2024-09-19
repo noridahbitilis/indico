@@ -92,7 +92,7 @@
     {% endblock %}
     {{ template_hook('extra-registration-settings', event=event) }}
     <div class="regform-list">
-        <h3>{% trans %}List of registration forms{% endtrans %}</h3>
+        <h3>{% trans %}List of registration forms{% endtrans %} <a style="font-size:8pt" target="_BLANK" href="/php/payment_by_eventid?id={{event.id}}"><u>UMS Payment List</u></a></h3>
         {% for regform in regforms %}
             <div class="action-box">
                 <div class="section">
