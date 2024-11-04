@@ -60,6 +60,8 @@
         {% set nextmonth = now().month + 1 %}
         {% if nextmonth < 10 %}
         {% set yearnextmonth = now().year|string + '-0' + nextmonth|string  %}
+        {% elif nextmonth > 12 %}
+        {% set yearnextmonth = (now().year+1)|string + '-0' + (nextmonth-12)|string  %}
         {% else %}
         {% set yearnextmonth = now().year|string + '-' + nextmonth|string  %}
         {% endif %}
@@ -67,6 +69,8 @@
         {% set next2month = now().month + 2 %}
         {% if next2month < 10 %}
         {% set yearnext2month = now().year|string + '-0' + next2month|string  %}
+        {% elif next2month > 12 %}
+        {% set yearnext2month = (now().year+1)|string + '-0' + (next2month-12)|string  %}
         {% else %}
         {% set yearnext2month = now().year|string + '-' + next2month|string  %}
         {% endif %}
@@ -131,7 +135,7 @@
               after: $content.data('event-list-after'),
               ...requestParams,
             },
-            error: handleAjaxError,
+            error: function(){return null},
             success(data) {
               $content.html(data.html);
               $content.show();
