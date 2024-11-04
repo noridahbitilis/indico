@@ -138,7 +138,46 @@
         <div id="payment-summary" class="regform-done">
             <div class="i-box-header">
                 <div class="i-box-title">
+                    {% if registration.transaction.status.name == 'successful' %}
                     {% trans %}Invoice{% endtrans %}
+                    {% else %}
+                    {% trans %}Payment Details{% endtrans %}
+                    {% endif %}
+                    {% if registration.event_id == 9 %}
+                        <br>
+                        <a style="font-size:8pt" href="/php/proforma/?id={{registration.id}}&data={{registration.billable_data}}" target="_BLANK">
+                        <u>VIEW PROFORMA INVOICE</u></a>
+                    <button id="view_proforma" data-id={{registration.id}}>View</button>
+
+                    <script>
+                        document.getElementById('view_proforma').addEventListener('click', function() {
+                            const id = this.getAttribute('data-id');
+                            const table = document.getElementById('payment_details');
+                            const rows = Array.from(table.rows).slice(1); // Skip header row
+                            const data = rows.map(row => {
+                                if (row.cells.length < 2) return null; // Check if row has enough cells
+                                if(row.cells[0].className == "regform-done-table-total"){
+                                    return {
+                                    item: "Total",
+                                    price: row.cells[0].textContent
+                                };
+                                }
+                                else{
+                                return {
+                                    item: row.cells[0].textContent+"~"+row.cells[1].textContent,
+                                    price: row.cells[2].textContent
+                                };}
+                            }).filter(item => item !== null); // Filter out any null entries
+                
+                            // // Store the array of objects in sessionStorage
+                            sessionStorage.setItem('upcPaymentDetails', JSON.stringify(data));
+                
+                            // Redirect to the new page
+                            window.location.href = '/php/proforma/w.php?id='+id; // Change to your target page
+                        });
+                    </script>
+                    
+                    {% endif %}
                 </div>
                 {% if not registration.transaction or registration.transaction.status.name not in ('successful', 'pending')
                    or registration.is_pending_transaction_expired() %}
@@ -159,7 +198,7 @@
                 {% endif %}
             </div>
             <div class="i-box-content">
-                <table class="registration-info payment-info">
+                <table class="registration-info payment-info" id="payment_details">
                     <tr>
                         <td class="regform-done-table-title">
                             {% trans %}Item{% endtrans %}
