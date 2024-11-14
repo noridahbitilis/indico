@@ -138,16 +138,16 @@
         <div id="payment-summary" class="regform-done">
             <div class="i-box-header">
                 <div class="i-box-title">
-                    {% if registration.transaction.status.name == 'successful' %}
-                    {% trans %}Invoice{% endtrans %}
-                    {% else %}
+                    {% if not registration.transaction or registration.transaction.status.name not in ('successful', 'pending')
+                   or registration.is_pending_transaction_expired() %}
                     {% trans %}Payment Details{% endtrans %}
+                    {% else %}
+                    {% trans %}Invoice{% endtrans %}
                     {% endif %}
                     {% if registration.event_id == 9 %}
                         <br>
-                        <a style="font-size:8pt" href="/php/proforma/?id={{registration.id}}&data={{registration.billable_data}}" target="_BLANK">
+                        <a id="view_proforma" data-id={{registration.id}} style="font-size:8pt">
                         <u>VIEW PROFORMA INVOICE</u></a>
-                    <button id="view_proforma" data-id={{registration.id}}>View</button>
 
                     <script>
                         document.getElementById('view_proforma').addEventListener('click', function() {
@@ -168,15 +168,15 @@
                                     price: row.cells[2].textContent
                                 };}
                             }).filter(item => item !== null); // Filter out any null entries
-                
+
                             // // Store the array of objects in sessionStorage
                             sessionStorage.setItem('upcPaymentDetails', JSON.stringify(data));
-                
+
                             // Redirect to the new page
-                            window.location.href = '/php/proforma/w.php?id='+id; // Change to your target page
+                            window.location.href = '/php/proforma/?id='+id; // Change to your target page
                         });
                     </script>
-                    
+
                     {% endif %}
                 </div>
                 {% if not registration.transaction or registration.transaction.status.name not in ('successful', 'pending')
