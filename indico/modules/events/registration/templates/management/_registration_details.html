@@ -78,19 +78,19 @@
                     </div>
                 </div>
                 <div class="i-box-content">
-		{% if registration.transaction.provider != '_manual' %}
-			<dl class="i-data-list">
-			<dt>Amount</dt>
-			<dd>{{registration.transaction.amount}} {{registration.transaction.currency}}</dd>
-			<dt>Payment date</dt>
-			<dd>{{registration.transaction.timestamp | format_datetime (timezone=registration.transaction.registration.event.tzinfo)}}</dd>
-			<dt>Paid with</dt>
-			<dd>{{registration.transaction.provider}}</dd>
-			</dl>
-		{% endif %}
-		{% if registration.transaction.provider == '_manual' %}
+                {% if registration.transaction.provider != '_manual' %}
+                        <dl class="i-data-list">
+                        <dt>Amount</dt>
+                        <dd>{{registration.transaction.amount}} {{registration.transaction.currency}}</dd>
+                        <dt>Payment date</dt>
+                        <dd>{{registration.transaction.timestamp | format_datetime (timezone=registration.transaction.registration.event.tzinfo)}}</dd>
+                        <dt>Paid with</dt>
+                        <dd>{{registration.transaction.provider}}</dd>
+                        </dl>
+                {% endif %}
+                {% if registration.transaction.provider == '_manual' %}
                     {{ registration.transaction.render_details()|safe }}
-		{% endif %}
+                {% endif %}
                 </div>
             </div>
         {% endif %}
@@ -160,6 +160,62 @@
                     {% trans %}Mark as paid{% endtrans %}
                 </button>
             </div>
+            <style>
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+/* Full-width input fields */
+.form-container input[type=text] {
+  padding: 10px;
+}
+
+
+.form-editfee {
+  display: none;
+  position: fixed;
+  border: 3px solid;
+  z-index: 9;
+}
+</style>
+
+<button class="i-button" onclick="openEditFeeForm()">Edit Registration Fee</button>
+
+<div id="edit-price" class="form-editfee">
+  <form class="form-container" id="edit-price-form">
+    <input type="hidden" name="id" value="{{ registration.id }}">
+
+    <label for="price"><b>New Registration Fee</b></label>
+    <br>
+    <input type="text" name="price" required>
+        <br><br>
+    <button type="submit" class="btn">Submit</button>
+    <button type="button" class="btn cancel" onclick="closeEditFeeForm()">Close</button>
+  </form>
+</div>
+
+<script>
+function openEditFeeForm() {
+  document.getElementById("edit-price").style.display = "block";
+}
+
+function closeEditFeeForm() {
+  document.getElementById("edit-price").style.display = "none";
+}
+
+$("#edit-price-form").submit(function(event) {
+ var values = $(this).serialize();
+ $.ajax({
+    type: "POST",
+    url: "https://"+window.location.hostname+"/php/edit_price.php",
+    data: values,
+    success: function(response) {
+    if(!alert('Success')){window.location.reload();}
+    }
+    });
+ });
+</script>
             {% if registration.registration_form.moderation_enabled %}
                 {{ _render_reset_registration_button(registration, _('Reset approval')) }}
             {% endif %}
@@ -178,7 +234,7 @@
         {%- endtrans %}
     </div>
     {% set can_reset = registration.registration_form.moderation_enabled and not registration.is_paid %}
-    {% set can_get_ticket = registration.registration_form.tickets_enabled and (not ticket_template.is_ticket or not registration.is_ticket_blocked) %}
+    {% set can_get_ticket = registration.registration_form.tickets_enabled and (not registration.is_ticket_blocked) %}
     {% if can_reset or can_get_ticket %}
         <div class="toolbar">
             {% if can_reset %}
