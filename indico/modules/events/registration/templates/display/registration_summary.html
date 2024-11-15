@@ -89,6 +89,15 @@
                     </a>
                 </div>
             {% endif %}
+
+            {% if registration.transaction and registration.transaction.data.epayment_order_no %}
+            <div class="group">
+                    <form action="/php/receipt.php" method="POST">
+                        <input type="hidden" name="order_no" value={{registration.transaction.data.epayment_order_no}}>
+                        <button class="i-button accept icon-eye" type="submit">View Receipt</button>
+                    </form>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
