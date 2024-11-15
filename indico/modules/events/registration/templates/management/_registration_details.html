@@ -91,6 +91,13 @@
                 {% if registration.transaction.provider == '_manual' %}
                     {{ registration.transaction.render_details()|safe }}
                 {% endif %}
+
+                    {% if registration.transaction.data.epayment_order_no %}
+                            <form action="/php/receipt.php" method="POST" style="padding-left:100px">
+                                <input type="hidden" name="order_no" value={{registration.transaction.data.epayment_order_no}}>
+                                <button class="i-button big" type="submit">View Receipt</button>
+                            </form>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
