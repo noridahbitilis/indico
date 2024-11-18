@@ -47,6 +47,57 @@
                 <a href="#payment-summary" class="js-highlight-payment">
                     {%- trans %}Proceed to checkout{% endtrans -%}
                 </a>.
+
+                <style>
+                    .form-container {
+                      max-width: 300px;
+                      padding: 10px;
+                      background-color: white;
+                    }
+                    /* Full-width input fields */
+                    .form-container input[type=text] {
+                      padding: 10px;
+                    }
+                    #paymentEnquiry {
+                      display: none;
+                      position: fixed;
+                      border: 3px solid;
+                      z-index: 9;
+                    }
+                    </style>
+                <br><br>
+            If you made a payment but it's not updated here.
+                <a onclick="paymentEnquiry()">Payment Enquiry</a>
+                <div id="paymentEnquiry" class="form-editfee">
+                  <form class="form-container" id="payment_enquiry_form">
+                    <input type="hidden" name="id" value="{{ registration.id }}">
+                    <label for="orderNo"><b>Order No</b></label>
+                    <br>
+                    <input type="text" name="orderNo" required>
+                        <br><br>
+                    <button type="submit" class="btn">Submit</button>
+                    <button type="button" class="btn cancel" onclick="closePaymentEnquiry()">Close</button>
+                  </form>
+                </div>
+<script>
+function paymentEnquiry() {
+  document.getElementById("paymentEnquiry").style.display = "block";
+}
+function closePaymentEnquiry() {
+  document.getElementById("paymentEnquiry").style.display = "none";
+}
+$("#payment_enquiry_form").submit(function(event) {
+ var values = $(this).serialize();
+ $.ajax({
+    type: "POST",
+    url: "https://"+window.location.hostname+"/php/payment_enquiry.php",
+    data: values,
+    success: function(response) {
+    console.log(response);
+    }
+    });
+ });
+</script>
             {% endif %}
         </div>
         <div class="toolbar">
